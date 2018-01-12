@@ -1,0 +1,471 @@
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+
+import javax.swing.JLabel;
+import java.awt.Font;
+import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import java.net.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.io.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class Assignment1 {
+
+	private JFrame frame;
+	private JTextField txtFirstname;
+	private JTextField txtMidname;
+	private JTextField txtSurname;
+	private JTextField txtDob;
+	private JTextField txtAddress;
+	private JTextField txtJobtitle;
+	private JTextField txtCompany;
+	private JTextField txtHeight;
+	private JTextField txtWeight;
+	private JTextField txtBmi;
+	private static ArrayList<String> givenName=new ArrayList<String>();
+	private static ArrayList<String> additionalName=new ArrayList<String>();
+	private static ArrayList<String> familyName=new ArrayList<String>();
+	private static ArrayList<String> birthDate=new ArrayList<String>();
+	private static ArrayList<String> height=new ArrayList<String>();
+	private static ArrayList<String> weight=new ArrayList<String>();
+	private static ArrayList<String> jobTitle=new ArrayList<String>();
+	private static ArrayList<String> affiliation=new ArrayList<String>();
+	private static ArrayList<String> address=new ArrayList<String>();
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) throws Exception{
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Assignment1 window = new Assignment1();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		URL[] item=new URL[3];
+	    item[0] = new URL("file:///public_html/person1.html");
+	    item[1] = new URL("file:///public_html/person2.html");
+	    item[2] = new URL("file:///public_html/person3.html");
+	    DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+	    Document doc = docBuilder.newDocument();
+	    //BufferedReader in = new BufferedReader(
+	    //			new InputStreamReader(
+	    //			item.openStream()));
+
+	    //String inputLine;
+
+	    for(int loop1=0;loop1<3;loop1++){
+	        BufferedReader in = new BufferedReader(
+	                new InputStreamReader(
+	                        item[loop1].openStream()));
+	        String inputLine;
+	        int size1 = 0,size2=0;
+	        while ((inputLine = in.readLine()) != null)//reads in the html page line by line
+	        {
+	            String inputLine11=inputLine.replaceAll("\"", "");//removes speechmarks from text
+	            String inputLine21=inputLine11.replaceAll("<strong>", "");
+	            String inputLine2=inputLine21.replaceAll("</strong>", "");
+	            String[] parts = inputLine2.split("<span itemprop=");//splits into sections based on it is after <span class="
+	            for (int loop=0;loop<parts.length;loop++)
+	            {
+	                if (parts[loop].contains("givenName>"))
+	                {
+	                    givenName.add(parts[loop].substring(10, (parts[loop].length())-7));
+	                }
+	                size1=givenName.size();
+	                if (parts[loop].contains("additionalName>"))
+	                {
+	                    additionalName.add(parts[loop].substring(15, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("familyName>"))
+	                {
+	                    familyName.add(parts[loop].substring(11, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("birthDate>"))
+	                {
+	                    birthDate.add(parts[loop].substring(10, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("height>"))
+	                {
+	                    height.add(parts[loop].substring(7, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("weight>"))
+	                {
+	                    weight.add(parts[loop].substring(7, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("jobTitle>"))
+	                {
+	                    jobTitle.add(parts[loop].substring(9, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("affiliation>"))
+	                {
+	                    affiliation.add(parts[loop].substring(12, (parts[loop].length())-7));
+
+	                }
+	                if (parts[loop].contains("address>"))
+	                {
+	                    address.add(parts[loop].substring(8, (parts[loop].length())-7));
+
+	                }
+	                size2=address.size();
+
+	            }
+
+
+	        }in.close();
+	        if (size2<size1)
+	        {
+	            address.add(null);
+	        }
+	    }
+
+	    System.out.println("Extracted first name "+givenName);
+	    System.out.println("Extracted middle name "+additionalName);
+	    System.out.println("Extracted surname "+familyName);
+	    System.out.println("Extracted DOB "+birthDate);
+	    System.out.println("Extracted height "+height);
+	    System.out.println("Extracted weight "+weight);
+	    System.out.println("Extracted job title "+jobTitle);
+	    System.out.println("Extracted affiliation "+affiliation);
+	    System.out.println("Extracted address "+address);
+	    try {
+	        /////////////////////////////
+	        //Creating an empty XML Document
+
+
+
+
+	        //Creating the XML tree
+
+	        Element root = doc.createElement("hcards");
+	        doc.appendChild(root);
+
+
+	        for (int loopx=0;loopx<3;loopx++)
+	        {
+	            Element hcard=doc.createElement("hcard");
+	            root.appendChild(hcard);
+
+	            Element first1 = doc.createElement("givenName");
+	            hcard.appendChild(first1);
+	            //add a text element to the child
+	            Text text = doc.createTextNode(givenName.get(loopx));
+	            first1.appendChild(text);
+
+	            Element first2 = doc.createElement("additionalName");
+	            hcard.appendChild(first2);
+	            //add a text element to the child
+	            Text text2 = doc.createTextNode(additionalName.get(loopx));
+	            first2.appendChild(text2);
+
+	            Element first3 = doc.createElement("familyName");
+	            hcard.appendChild(first3);
+	            //add a text element to the child
+	            Text text3 = doc.createTextNode(familyName.get(loopx));
+	            first3.appendChild(text3);
+
+	            Element first4 = doc.createElement("birthDate");
+	            hcard.appendChild(first4);
+	            //add a text element to the child
+	            Text text4 = doc.createTextNode(birthDate.get(loopx));
+	            first4.appendChild(text4);
+
+	            Element first5 = doc.createElement("height");
+	            hcard.appendChild(first5);
+	            //add a text element to the child
+	            Text text5 = doc.createTextNode(height.get(loopx));
+	            first5.appendChild(text5);
+
+	            Element first6 = doc.createElement("weight");
+	            hcard.appendChild(first6);
+	            //add a text element to the child
+	            Text text6 = doc.createTextNode(weight.get(loopx));
+	            first6.appendChild(text6);
+
+	            Element first7 = doc.createElement("jobTitle");
+	            hcard.appendChild(first7);
+	            //add a text element to the child
+	            Text text7 = doc.createTextNode(jobTitle.get(loopx));
+	            first7.appendChild(text7);
+
+	            Element first8 = doc.createElement("affiliation");
+	            hcard.appendChild(first8);
+	            //add a text element to the child
+	            Text text8 = doc.createTextNode(affiliation.get(loopx));
+	            first8.appendChild(text8);
+
+	            if(address.get(loopx)!=null)
+	            {
+	                Element first9 = doc.createElement("address");
+	                hcard.appendChild(first9);
+	                //add a text element to the child
+	                Text text9 = doc.createTextNode(address.get(loopx));
+	                first9.appendChild(text9);
+	            }
+	            //Output the XML
+	        }
+	        //set up a transformer
+	        TransformerFactory transfac = TransformerFactory.newInstance();
+	        Transformer trans = transfac.newTransformer();
+	        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	        trans.setOutputProperty(OutputKeys.INDENT, "yes");
+
+	        //create string from xml tree
+	        StringWriter sw = new StringWriter();
+	        StreamResult result = new StreamResult(sw);
+	        DOMSource source = new DOMSource(doc);
+	        trans.transform(source, result);
+	        String xmlString = sw.toString();
+
+	        //print xml
+	        System.out.println("Here's the xml:\n\n" + xmlString);
+
+	    } catch (Exception e) {
+	        System.out.println(e);
+
+	    }
+	    saveXMLDocument("example2.xml", doc);
+	}
+	public static boolean saveXMLDocument(String fileName, Document doc) {
+	    System.out.println("Saving XML file... " + fileName);
+	    // open output stream where XML Document will be saved
+	    File xmlOutputFile = new File(fileName);
+	    FileOutputStream fos;
+	    Transformer transformer;
+	    try {
+	        fos = new FileOutputStream(xmlOutputFile);
+	    }
+	    catch (FileNotFoundException e) {
+	        System.out.println("Error occured: " + e.getMessage());
+	        return false;
+	    }
+	    // Use a Transformer for output
+	    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	    try {
+	        transformer = transformerFactory.newTransformer();
+	    }
+	    catch (TransformerConfigurationException e) {
+	        System.out.println("Transformer configuration error: " + e.getMessage());
+	        return false;
+	    }
+	    DOMSource source = new DOMSource(doc);
+	    StreamResult result = new StreamResult(fos);
+	    // transform source into result will do save
+	    try {
+	        transformer.transform(source, result);
+	    }
+	    catch (TransformerException e) {
+	        System.out.println("Error transform: " + e.getMessage());
+	    }
+	    System.out.println("XML file saved.");
+	    return true; 
+	}
+	/**
+	 * Create the application.
+	 */
+	public Assignment1() {
+		initialize();
+	}
+	
+	/**
+	 * Method that gets patient data from ArrayLists, 
+	 * converts height from cm to m, 
+	 * weight from lbs to kilograms
+	 * calculates Body Mass Index
+	 */
+	private void patientDetails(int i){
+		txtFirstname.setText(givenName.get(i));
+		txtMidname.setText(additionalName.get(i));
+		txtSurname.setText(familyName.get(i));
+		txtDob.setText(birthDate.get(i));
+		txtAddress.setText(address.get(i));
+		txtJobtitle.setText(jobTitle.get(i));
+		txtCompany.setText(affiliation.get(i));
+		double cmHeight = Double.parseDouble(height.get(i));
+		double lbWeight = Double.parseDouble(weight.get(i));
+		double mHeight = cmHeight/100;
+		double kgWeight = lbWeight/2.2046226218;
+		double bmi = kgWeight/(mHeight*mHeight);
+		DecimalFormat df = new DecimalFormat("#.##");
+		txtHeight.setText(df.format(mHeight));
+		txtWeight.setText(df.format(kgWeight));
+		txtBmi.setText(df.format(bmi));
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(200, 200, 800, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblSelectAPatient = new JLabel("Select a patient to view details");
+		lblSelectAPatient.setFont(new Font("Lucida Grande", Font.PLAIN, 17));
+		lblSelectAPatient.setBounds(262, 6, 258, 29);
+		frame.getContentPane().add(lblSelectAPatient);
+		
+		JButton btnPat1 = new JButton("Patient 1");
+		btnPat1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int i = 0;
+				patientDetails(i);
+			}
+		});
+		btnPat1.setBounds(54, 60, 117, 29);
+		frame.getContentPane().add(btnPat1);
+		
+		JButton btnPat2 = new JButton("Patient 2");
+		btnPat2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int i = 1;
+				patientDetails(i);
+			}
+		});
+		btnPat2.setBounds(316, 60, 117, 29);
+		frame.getContentPane().add(btnPat2);
+		
+		JButton btnPat3 = new JButton("Patient 3");
+		btnPat3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int i = 2;
+				patientDetails(i);
+			}
+		});
+		btnPat3.setBounds(610, 60, 117, 29);
+		frame.getContentPane().add(btnPat3);
+		
+		JLabel lblFirstname = new JLabel("First Name:");
+		lblFirstname.setFont(new Font("Lucida Grande", Font.PLAIN, 13));
+		lblFirstname.setBounds(16, 186, 79, 16);
+		frame.getContentPane().add(lblFirstname);
+		
+		JLabel lblmidname = new JLabel("Additional Name(s):");
+		lblmidname.setBounds(250, 186, 134, 16);
+		frame.getContentPane().add(lblmidname);
+		
+		JLabel lblSurname = new JLabel("Surname:");
+		lblSurname.setBounds(552, 186, 61, 16);
+		frame.getContentPane().add(lblSurname);
+		
+		txtFirstname = new JTextField();
+		txtFirstname.setBounds(93, 180, 134, 28);
+		frame.getContentPane().add(txtFirstname);
+		txtFirstname.setColumns(10);
+		
+		txtMidname = new JTextField();
+		txtMidname.setBounds(386, 180, 134, 28);
+		frame.getContentPane().add(txtMidname);
+		txtMidname.setColumns(10);
+		
+		txtSurname = new JTextField();
+		txtSurname.setBounds(625, 180, 134, 28);
+		frame.getContentPane().add(txtSurname);
+		txtSurname.setColumns(10);
+		
+		JLabel lblPatdetails = new JLabel("Selected Patient Details:");
+		lblPatdetails.setBounds(285, 116, 162, 16);
+		frame.getContentPane().add(lblPatdetails);
+		
+		JLabel lblAddress = new JLabel("Address:");
+		lblAddress.setBounds(16, 285, 61, 16);
+		frame.getContentPane().add(lblAddress);
+		
+		JButton btnViewmap = new JButton("View on Map");
+		btnViewmap.setBounds(568, 280, 117, 29);
+		frame.getContentPane().add(btnViewmap);
+		
+		JLabel lblDob = new JLabel("DOB:");
+		lblDob.setBounds(16, 231, 61, 16);
+		frame.getContentPane().add(lblDob);
+		
+		JLabel lblJobtitle = new JLabel("Job Title:");
+		lblJobtitle.setBounds(16, 341, 61, 16);
+		frame.getContentPane().add(lblJobtitle);
+		
+		JLabel lblCompany = new JLabel("Company:");
+		lblCompany.setBounds(414, 341, 79, 16);
+		frame.getContentPane().add(lblCompany);
+		
+		JLabel lblHeight = new JLabel("Height (m):");
+		lblHeight.setBounds(16, 403, 79, 16);
+		frame.getContentPane().add(lblHeight);
+		
+		JLabel lblWeight = new JLabel("Weight (kg):");
+		lblWeight.setBounds(284, 403, 77, 16);
+		frame.getContentPane().add(lblWeight);
+		
+		JLabel lblBmi = new JLabel("BMI:");
+		lblBmi.setBounds(566, 403, 61, 16);
+		frame.getContentPane().add(lblBmi);
+		
+		txtDob = new JTextField();
+		txtDob.setBounds(93, 225, 134, 28);
+		frame.getContentPane().add(txtDob);
+		txtDob.setColumns(10);
+		
+		txtAddress = new JTextField();
+		txtAddress.setBounds(93, 279, 437, 28);
+		frame.getContentPane().add(txtAddress);
+		txtAddress.setColumns(10);
+		
+		txtJobtitle = new JTextField();
+		txtJobtitle.setBounds(93, 335, 252, 28);
+		frame.getContentPane().add(txtJobtitle);
+		txtJobtitle.setColumns(10);
+		
+		txtCompany = new JTextField();
+		txtCompany.setBounds(505, 335, 254, 28);
+		frame.getContentPane().add(txtCompany);
+		txtCompany.setColumns(10);
+		
+		txtHeight = new JTextField();
+		txtHeight.setBounds(93, 397, 134, 28);
+		frame.getContentPane().add(txtHeight);
+		txtHeight.setColumns(10);
+		
+		txtWeight = new JTextField();
+		txtWeight.setBounds(373, 397, 134, 28);
+		frame.getContentPane().add(txtWeight);
+		txtWeight.setColumns(10);
+		
+		txtBmi = new JTextField();
+		txtBmi.setBounds(625, 397, 134, 28);
+		frame.getContentPane().add(txtBmi);
+		txtBmi.setColumns(10);
+	}
+}
